@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply m-0 bg-page font-body text-ink antialiased;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+
+  button,
+  a,
+  input,
+  [tabindex]:not([tabindex='-1']) {
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink;
+  }
+}
+
+@layer components {
+  .block-card {
+    @apply border-[3px] border-ink bg-white shadow-block;
+  }
+
+  .block-card-cream {
+    @apply border-[3px] border-ink bg-cream shadow-block;
+  }
+}
