@@ -17,7 +17,7 @@ Limits: 20 PDFs, 50 MB per file, 200 MB per operation.
 - Frontend: React, Vite, Tailwind CSS, `@dnd-kit`, `pdf-lib`
 - Backend: FastAPI, PyMuPDF
 - Storage: Vercel Blob in production, local temp files for development
-- Deploy: one Vercel project
+- Deploy: one Vercel project (frontend + FastAPI share one domain)
 
 ## Local development
 
@@ -50,11 +50,55 @@ vercel dev
 
 ## Production (Vercel)
 
-1. Push this repo and import it into Vercel.
-2. Add `BLOB_READ_WRITE_TOKEN` from a Vercel Blob store.
-3. Deploy. Frontend and FastAPI share one domain.
+Frontend and FastAPI deploy as **one** Vercel project. Client uploads go to Vercel Blob so large PDFs are not sent through the ~4.5 MB function payload limit. The API receives Blob URLs, processes PDFs with PyMuPDF, writes the result to Blob, and returns a download URL.
 
-Client uploads go to Blob so large PDFs are not sent through the 4.5 MB function payload limit. The API receives Blob URLs, processes PDFs with PyMuPDF, writes the result to Blob, and returns a download URL.
+GitHub repo: `https://github.com/Muhammad-Subhan456/pdf_compilers.git`
+
+### A. Prerequisites
+
+- Vercel account at [vercel.com](https://vercel.com)
+- Access to the GitHub repo above
+- Latest deploy config pushed to `main` (`vercel.json`, `api/index.py`, root `requirements.txt`)
+
+### B. Import the project
+
+1. Vercel Dashboard → **Add New…** → **Project**
+2. Import **`pdf_compilers`** from GitHub (authorize the Vercel GitHub app if prompted)
+3. Framework Preset: **Other** / no framework (`vercel.json` owns the config)
+4. Root Directory: **`.`** (repo root — do **not** set `frontend`)
+5. Confirm build settings match `vercel.json`:
+   - Build Command: `cd frontend && npm install && npm run build`
+   - Output Directory: `frontend/dist`
+6. Prefer connecting Blob before the first production deploy (or deploy once, then add Blob and redeploy)
+
+### C. Add Vercel Blob (required for real PDF sizes)
+
+Without Blob, production falls back to multipart through the function and will fail for files near or over the ~4.5 MB function payload limit.
+
+1. In the project → **Storage** → **Create** → **Blob**
+2. Create a store (e.g. `pink-pdf-craft-blob`)
+3. Connect it to this project for **Production** and **Preview**
+4. Confirm **`BLOB_READ_WRITE_TOKEN`** appears under **Settings → Environment Variables** for Production (and Preview if you want preview deploys to behave the same)
+
+### D. Deploy
+
+1. Deploy from the import flow, or **Deployments → Redeploy** after Blob is connected
+2. Wait for the build: Vite frontend build + Python deps from root `requirements.txt`
+3. Open the production URL Vercel assigns (e.g. `https://pdf-compilers-….vercel.app`)
+
+### E. Verify live
+
+1. Home loads with the pink UI
+2. `GET /api/health` → `{"ok":true,"service":"pink-pdf-craft"}`
+3. `GET /api/blob/status` → `{"blobEnabled":true}`
+4. Merge two small PDFs → download works
+5. Trim with `2-3` → download works
+6. Optional: upload a PDF larger than 5 MB to confirm the Blob path
+
+### F. Optional
+
+- **Settings → Domains**: add a custom domain
+- Keep Hobby plan limits in mind (function duration/memory and Blob quotas)
 
 ## Project layout
 
@@ -64,14 +108,13 @@ backend/app/              FastAPI routes, PDF service, storage helpers
 frontend/                 React + Vite UI
 UI_Designs/               Screen mockups
 vercel.json               Build, rewrites, function config
+requirements.txt          Python deps for Vercel
 ```
 
 ## Environment
-
-Copy `.env.example` if you use Blob locally:
 
 ```text
 BLOB_READ_WRITE_TOKEN=
 ```
 
-No database URL or auth secrets are required.
+Copy `.env.example` if you use Blob locally. No database URL or auth secrets are required.
