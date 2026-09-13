@@ -2,11 +2,11 @@
 name = "pink-pdf-craft-backend"
 version = "1.0.0"
 description = "FastAPI backend for Pink PDF Craft"
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.13"
 dependencies = [
   "fastapi==0.115.12",
   "pymupdf==1.25.5",
   "httpx==0.28.1",
   "python-multipart==0.0.20",
-  "pydantic==2.11.3",
+  "pydantic>=2.11.3,<3",
 ]
