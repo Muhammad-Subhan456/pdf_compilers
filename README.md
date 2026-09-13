@@ -1,5 +1,6 @@
 # Pink PDF Craft
 
+
 A free, no-account web app for merging, lossless-compressing, and trimming PDFs. The UI matches the pink Minecraft-inspired mockups in `UI_Designs`.
 
 Files are processed temporarily. Nothing is stored as a document library, and there are no user accounts.

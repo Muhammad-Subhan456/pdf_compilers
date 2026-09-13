@@ -9,6 +9,7 @@ The initial version will focus on two core capabilities:
 1. **Merge & Compress PDFs**
 2. **Trim / Extract Pages from a PDF**
 
+
 The product will prioritize:
 
 * Simplicity
