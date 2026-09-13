@@ -3,6 +3,13 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": null,
+  "build": {
+    "env": {
+      "PYTHON_VERSION": "3.12",
+      "UV_PYTHON": "3.12",
+      "UV_ONLY_BINARY": "pydantic-core"
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
